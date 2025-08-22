@@ -1,19 +1,32 @@
 import './styles/globals.css'
 import InputTodo from './Component/input';
+import { useEffect, useState } from 'react';
 
 function App() {
-  let fullname = "Linh"
-  let infor = {
-    "age": 21,
-    "address": "Th"
-  }
+
+  const [infor, setInfor] = useState([
+    { fullname: "linh", age: 21 },
+    { fullname: "linhs", age: 19 },
+    { fullname: "linhk", age: 77 }
+  ])
+
   const funcAlert = () => {
     alert(`hello`)
   }
+
+  const createUser = (fullname: string, age: number) => {
+    let newUser = { fullname, age }
+    setInfor([newUser, ...infor])
+  }
+
+  const deleteUser = (age: number) => {
+    setInfor(infor.filter((inf) => inf.age != age))
+  }
+
   return (
     <div>
       add new information
-      <InputTodo fullname={fullname} infor={infor} funcAlert={funcAlert}></InputTodo>
+      <InputTodo infor={infor} funcAlert={funcAlert} createUser={createUser} deleteUser={deleteUser}></InputTodo>
     </div>
   );
 }
