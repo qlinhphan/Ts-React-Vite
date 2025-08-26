@@ -1,4 +1,4 @@
-import './styles/globals.css'
+import './styles/globals.scss'
 import InputTodo from './Component/input';
 import { useEffect, useState } from 'react';
 
