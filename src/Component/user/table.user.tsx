@@ -59,73 +59,119 @@
 // export default TableUsers
 
 import React, { useEffect, useState } from 'react';
-import { Space, Table, Tag } from 'antd';
+import { Button, Flex, Space, Table, Tag } from 'antd';
 import type { TableProps } from 'antd';
 import ButtonPrimary from '../button/button.primary';
 import ButtonDanger from '../button/button.danger';
+import ModalCreateUser from './modal.create';
+import ModalUpdateUser from './model.update';
 
 interface DataType {
     address: string,
     email: string,
     name: string
+    id: number
 }
 
 
 
-const columns: TableProps<DataType>['columns'] = [
-    {
-        title: 'Address',
-        dataIndex: 'address',
-        key: 'address',
-        render: (text) => <a>{text}</a>,
-    },
-    {
-        title: 'Email',
-        dataIndex: 'email',
-        key: 'email',
-    },
-    {
-        title: 'Name',
-        dataIndex: 'name',
-        key: 'name',
-    },
-    {
-        title: 'Action',
-        key: 'action',
-        render: (_, record) => (
-            <Space size="middle">
-                <ButtonPrimary></ButtonPrimary>
-                <ButtonDanger></ButtonDanger>
-            </Space>
-        ),
-    },
-];
+
+
 
 const TableUsers: React.FC = () => {
 
     const [allUsers, setAllUsers] = useState([])
 
+    const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+
+    const [personExactly, setPersonExactly] = useState({
+        email: "",
+        name: "",
+        password: "",
+        address: "",
+    })
+
+
+
+    const getData = async () => {
+        const response = await fetch("http://localhost:8080/users/all", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            }
+        });
+
+        const d = await response.json()
+        setAllUsers(d.data)
+    }
+
     useEffect(() => {
-
-
-        const getData = async () => {
-            const response = await fetch("http://localhost:8080/users/all", {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                }
-            });
-
-            const d = await response.json()
-            console.log(d.data)
-            setAllUsers(d.data)
-        }
-
         getData()
     }, []);
 
+
+    const viewExactly = async (id: number) => {
+
+        setIsUpdateModalOpen(true)
+
+        const response = await fetch(`http://localhost:8080/user/${id}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            }
+        });
+
+        const d = await response.json()
+        console.log(d.data)
+        setPersonExactly(d.data)
+        // alert(`view ${id}`)
+    }
+
+    const columns: TableProps<DataType>['columns'] = [
+        {
+            title: 'Address',
+            dataIndex: 'address',
+            key: 'address',
+            render: (text) => <a>{text}</a>,
+        },
+        {
+            title: 'Email',
+            dataIndex: 'email',
+            key: 'email',
+        },
+        {
+            title: 'Name',
+            dataIndex: 'name',
+            key: 'name',
+        },
+        {
+            title: 'Action',
+            key: 'action',
+            render: (_, record) => (
+                <Space size="middle">
+                    <Flex wrap gap="small" className="site-button-ghost-wrapper">
+                        <Button type="primary" ghost onClick={() => { viewExactly(record.id) }}>
+                            Update user {record.id}
+                        </Button>
+                    </Flex>
+                </Space>
+            ),
+        },
+    ];
+
     return (
-        <Table<DataType> columns={columns} dataSource={allUsers} />
+        <>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <h2>List users: </h2>
+                <ModalCreateUser getData={getData}></ModalCreateUser>
+                <ModalUpdateUser getData={getData} isUpdateModalOpen={isUpdateModalOpen} setIsUpdateModalOpen={setIsUpdateModalOpen}
+                    personExactly={personExactly}
+                ></ModalUpdateUser>
+            </div>
+
+            <Table<DataType> columns={columns} dataSource={allUsers} pagination={false} />
+        </>
+
     )
 }
 

@@ -6,7 +6,7 @@ import { Button, Flex } from 'antd';
 const ButtonPrimary = () => (
     <Flex wrap gap="small" className="site-button-ghost-wrapper">
         <Button type="primary" ghost>
-            Primary
+            Update user
         </Button>
     </Flex>
 );

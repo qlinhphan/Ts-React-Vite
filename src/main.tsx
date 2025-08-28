@@ -17,7 +17,7 @@ const Layout = () => {
       <div>
         <Menus></Menus>
       </div>
-      <Outlet />
+      <div style={{ marginTop: '3%' }}><Outlet /></div>
       <div>footer</div>
     </div>
   )
